@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-const transacaoSchema = new Schema({
+const transationSchema = new Schema({
     userFrom:{
         type: Schema.ObjectId,
         ref: "users"
@@ -36,4 +36,6 @@ const transacaoSchema = new Schema({
     timestamps: true
 });
 
-const Transacao = model("transacoes", transacaoSchema);
+const Transation = model("transations", transationSchema);
+
+export default Transation;

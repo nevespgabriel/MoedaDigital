@@ -3,14 +3,15 @@ import jwtService from "../services/jwt_service.js"
 
 const signup = async(req, res) => {
     try{
-        const create = User.create({
+        const user = {
             name: req.body.name,
             email: req.body.email,
             password: req.body.password,
             walletId: {
                 currency: req.body.walletId.currency
             }
-        });
+        };
+        const create = User.create(user);
         const token = jwtService.generateAccessToken(user);
         res.status(201).json(token);
     } catch(error){
@@ -20,20 +21,22 @@ const signup = async(req, res) => {
 
 const login = async(req, res) => {
     try{
-        const user = User.findOne({
+        const user = await User.findOne({
             email: req.body.email,
-            isStatus: true
+            isActive: true
         }).exec();
-        if(user && await User.isValidPassword(req.body.password)){
+        console.log(req.body.password);
+        if(user && await user.isValidPassword(req.body.password)){
             const token = jwtService.generateAccessToken(user);
-            res.json(token);
+            res.status(200).json(token);
+            
         } else{
             res.status(404).json({
                 error: "Email or password incorrect"
             });
         }
     } catch(error){
-        res.sendStatus(400).json(error.message);
+        res.sendStatus(500).json(error.message);
     }
 }
 
@@ -55,6 +58,14 @@ const index = async (req, res) => {
     }
 };
 
+const listTransations = async(req, res) => {
+    try{
+        const content = await User.findById(req.user._id).exec();
+        res.status(200).json(content.transations);
+    } catch(error){
+        res.status(500).send(error.message);
+    }
+}
 
 const showCash = async (req, res) => {
     try{
@@ -67,7 +78,7 @@ const showCash = async (req, res) => {
 
 const update = async (req, res) => {
     try{
-        const content = await User.findByIdAndUpdate(req.params.id, {
+        const content = await User.findByIdAndUpdate(req.user._id, {
             name: req.body.name,
             email: req.body.email,
             password: req.body.password,
@@ -88,6 +99,7 @@ const inactivateAccount = async(req, res) => {
             req.user.isActive = false;
             req.user.walletId.balance -= req.user.walletId.balance
         }
+        res.status(200);
     } catch(error){
         res.status(500).send(error.message);
     }
@@ -109,5 +121,6 @@ export default{
     showCash,
     update,
     inactivateAccount,
-    destroy
+    destroy,
+    listTransations
 }

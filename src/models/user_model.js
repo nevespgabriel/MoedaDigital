@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
+import bcrypt from "bcrypt"
 
-const walletSchema = new walletSchema({
+const walletSchema = new Schema({
     balance:{
         type: Schema.Types.Number,
         default: 0
@@ -14,7 +15,7 @@ const walletSchema = new walletSchema({
     timestamps: true
 });
 
-const userSchema = new userSchema({
+const userSchema = new Schema({
     name:{
         type: Schema.Types.String,
         required: true
@@ -42,7 +43,7 @@ const userSchema = new userSchema({
     role:{
         type: Schema.Types.String,
         enum: ["USER", "ADMIN"],
-        required: true
+        default: "USER"
     },
     isActive:{
         type: Schema.Types.Boolean,
