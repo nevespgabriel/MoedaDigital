@@ -4,7 +4,6 @@ import User from "../models/user_model.js";
 const jwtAuthenticator = async (req, res, next) => {
     try{
         const token = req.headers.authorization.split(" ")[1];
-        console.log(token);
         const user = jwt.verifyAccessToken(token);
         if(user){
             req.user = await User.findById(user._id).exec();
